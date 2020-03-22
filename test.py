@@ -48,12 +48,13 @@ def battle(data):
     gm = ROOMS.get(room)
     player = request.sid
     gm.set_choice(player, choice)
-    print gm.playerChoices
-    print 'ROOMS', ROOMS
-    print 'EMPTY_ROOMS', EMPTY_ROOMS
     while not gm.is_choices():
         pass
     results = gm.get_result()
+    results['your_results'] = results.get(player)
+    results['your_choice'] = gm.playerChoices.get(player)
+    opponent_choices = [v for _, v in gm.playerChoices.iteritems() if _ != player]
+    results['opponent_choices'] = opponent_choices
     emit('game_res', results, room=player)
 
 

@@ -1,7 +1,7 @@
 import random
 import string
 
-STONE = 'stone'
+STONE = 'rock'
 PAPER = 'paper'
 SCISSORS = 'scissors'
 

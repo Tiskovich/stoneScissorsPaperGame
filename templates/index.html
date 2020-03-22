@@ -1,11 +1,31 @@
 <html>
     <head>
-        <link rel="stylesheet" href="index.css">
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
     </head>
     <body>
         <div id="app">
-            {{ message }}
+            <div v-if="isStartGame">
+                <button @click="createGame">Start battle</button>
+            </div>
+            <div v-if="!isStartGame && !isGameCreated && !isResults">
+                Waiting oponents ...
+            </div>
+            <div v-if="isGameCreated">
+                <h1>The game is started</h1>
+                <counter></counter>
+                <button @click="sendSymbol('rock')">Камень</button>
+                <button @click="sendSymbol('paper')">Ножницы</button>
+                <button @click="sendSymbol('scissors')">Бумага</button>
+            </div>
+            <div v-if="isResults">
+                Results:
+                <p>[[results.your_results]]</p>
+                Your choice:
+                <p>[[results.your_choice]]</p>
+                Opponent choice:
+                <p v-for="choice  in results.opponent_choices">[[choice]] </p>
+            </div>
         </div>
         <script src="static/index.js"></script>
     </body>
