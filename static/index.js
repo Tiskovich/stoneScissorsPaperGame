@@ -5,7 +5,7 @@ Vue.component('counter', {
                             }
                     },
                     methods: {
-                            count() {
+                            count: function () {
                                 let timerId = setTimeout(function tick(count) {
                                 if (this.count >= 1000) {
                                     this.count--;
@@ -13,7 +13,7 @@ Vue.component('counter', {
                                 }, 1000, this.count);
                             }
                     },
-                    template: '<div class="counter" ref="child">{{ max_count }}</div>'
+                    template: '<div class="counter">{{ max_count }}</div>'
 })
 
 var app = new Vue({
@@ -40,9 +40,6 @@ var app = new Vue({
                     socket.emit('game_move', {size: 2, symbol: symbol, room: room});
                     this.isGameCreated = !this.isGameCreated
         },
-        exec() {
-        this.$refs.child.count()
-        }
     }
 });
 
@@ -53,7 +50,7 @@ socket.on('join_room', function(msg) {
         console.log(msg);
         localStorage.setItem('room', msg.room);
         app.isGameCreated = true;
-        app.exec();
+        app.count();
         });
 
 socket.on('game_res', function(msg) {
