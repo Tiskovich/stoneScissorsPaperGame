@@ -13,10 +13,11 @@
             </div>
             <div v-if="isGameCreated">
                 <h1>The game is started</h1>
-                <counter></counter>
+<!--                <counter></counter>-->
                 <button @click="sendSymbol('rock')">Камень</button>
-                <button @click="sendSymbol('paper')">Ножницы</button>
-                <button @click="sendSymbol('scissors')">Бумага</button>
+                <button @click="sendSymbol('scissors')">Ножницы</button>
+                <button @click="sendSymbol('paper')">Бумага</button>
+                <button @click="exitGame">Закончить игру</button>
             </div>
             <div v-if="isResults">
                 Results:

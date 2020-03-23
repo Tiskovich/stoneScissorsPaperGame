@@ -1,9 +1,12 @@
 import random
 import string
 
-STONE = 'rock'
-PAPER = 'paper'
-SCISSORS = 'scissors'
+
+class Choices(object):
+    ROCK = 'rock'
+    PAPER = 'paper'
+    SCISSORS = 'scissors'
+    LEAVE_GAME = 'leave'
 
 
 class Game(object):
@@ -25,31 +28,41 @@ class Game(object):
         return True if len(self.playerChoices) >= self.team_size else False
 
     def is_choices(self):
-        return True if None not in self.playerChoices.values() else False
+        print self.playerChoices
+        return True if None not in self.playerChoices.itervalues() else False
 
     def set_choice(self, player, choice):
+        print 'Set choice for player {} - {}'.format(player, choice)
         self.playerChoices[player] = choice
+
+    def _compare_stats(self, choice, opponent_choice):
+        res = []
+        if choice == choices.ROCK and opponent_choice == choices.SCISSORS:
+            res = ['win', 'lose']
+        elif choice == choices.ROCK and opponent_choice == choices.SCISSORS:
+            res = ['win', 'lose']
 
     def get_result(self):
         res = {}
-        prev_player = None
-        for player, symbol in self.playerChoices.iteritems():
-            if not prev_player:
-                prev_player = player
-                prev_symbol = symbol
+        opponent_id = None
+        for player, choice in self.playerChoices.iteritems():
+            if not opponent_id:
+                opponent_id = player
+                opponent_choice = choice
             else:
-                if symbol == prev_symbol:
-                    res.update({player: 'dead_heat', prev_player: 'dead_heat'})
-                if symbol == STONE and prev_symbol != PAPER:
-                    res.update({player: 'win', prev_player: 'lose'})
+                if choice == opponent_choice:
+                    res.update({player: 'dead_heat', opponent_id: 'dead_heat'})
+                elif choice == choices.LEAVE_GAME:
+                    res.update({player: 'lose', opponent_id: 'win'})
+                elif opponent_choice == choices.LEAVE_GAME:
+                    res.update({player: 'lose', opponent_id: 'win'})
+                elif choice == choices.ROCK and opponent_choice == choices.SCISSORS or\
+                        choice == choices.SCISSORS and opponent_choice == choices.PAPER or\
+                        choice == choices.PAPER and opponent_choice == choices.ROCK:
+                    res.update({player: 'win', opponent_id: 'lose'})
                 else:
-                    res.update({player: 'lose', prev_player: 'win'})
-                if symbol == PAPER and prev_symbol != SCISSORS:
-                    res.update({player: 'win', prev_player: 'lose'})
-                else:
-                    res.update({player: 'lose', prev_player: 'win'})
-                if symbol == SCISSORS and prev_symbol != STONE:
-                    res.update({player: 'win', prev_player: 'lose'})
-                else:
-                    res.update({player: 'lose', prev_player: 'win'})
+                    res.update({player: 'lose', opponent_id: 'win'})
         return res
+
+
+choices = Choices()
