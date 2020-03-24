@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request
-from flask_socketio import SocketIO, join_room, emit, send
 import os
-from game import Game, choices
 import time
-
 from collections import deque
+
+from flask import Flask, render_template, request
+from flask_socketio import SocketIO, join_room, emit
+
+from game import Game, choices
 
 # initialize Flask
 app = Flask(__name__)

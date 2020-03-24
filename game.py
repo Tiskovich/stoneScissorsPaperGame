@@ -7,6 +7,7 @@ class Choices(object):
     PAPER = 'paper'
     SCISSORS = 'scissors'
     LEAVE_GAME = 'leave'
+    INACTIVE = 'inactive'
 
 
 class Game(object):
@@ -35,13 +36,6 @@ class Game(object):
         print 'Set choice for player {} - {}'.format(player, choice)
         self.playerChoices[player] = choice
 
-    def _compare_stats(self, choice, opponent_choice):
-        res = []
-        if choice == choices.ROCK and opponent_choice == choices.SCISSORS:
-            res = ['win', 'lose']
-        elif choice == choices.ROCK and opponent_choice == choices.SCISSORS:
-            res = ['win', 'lose']
-
     def get_result(self):
         res = {}
         opponent_id = None
@@ -52,9 +46,9 @@ class Game(object):
             else:
                 if choice == opponent_choice:
                     res.update({player: 'dead_heat', opponent_id: 'dead_heat'})
-                elif choice == choices.LEAVE_GAME:
+                elif choice == (choices.LEAVE_GAME or choices.INACTIVE):
                     res.update({player: 'lose', opponent_id: 'win'})
-                elif opponent_choice == choices.LEAVE_GAME:
+                elif opponent_choice ==(choices.LEAVE_GAME or choices.INACTIVE):
                     res.update({player: 'lose', opponent_id: 'win'})
                 elif choice == choices.ROCK and opponent_choice == choices.SCISSORS or\
                         choice == choices.SCISSORS and opponent_choice == choices.PAPER or\

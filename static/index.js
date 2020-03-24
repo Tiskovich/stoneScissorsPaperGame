@@ -1,20 +1,31 @@
-Vue.component('counter', {
+Vue.component('timer', {
                         data: function () {
                             return {
-                            max_count: 5
-                            }
+                            start_count: 5,
+                            end_count: 0,
+                            timerId: ''
+                            };
+                    },
+                    mounted() {
+                        var self = this;
+                        this.timerId = setInterval(function () {
+                            self.timer_count(self.start_count, self.end_count);
+                            }, 1000);
+                    },
+                    beforeDestroy() {
+                         clearInterval(this.timerId)
                     },
                     methods: {
-                            count: function () {
-                                var self = this;
-                                let timerId = setTimeout(function tick(count) {
-                                if (self.count >= 1000) {
-                                    self.count--;
-                                    timerId = setTimeout(tick, 1000, self.count);}
-                                }, 1000, self.count);
-                            }
+                        timer_count(start_count, end_count) {
+                        if (start_count > end_count) {
+                            this.start_count = this.start_count - 1;
+                        } else {
+                            this.$root.sendSymbol('inactive');
+                            clearInterval(this.timerId)
+                        }
                     },
-                    template: '<div class="counter">[[max_count]]</div>'
+                },
+                    template: '<div class="timer"><p>{{start_count}}</p></div>',
 })
 
 var app = new Vue({
@@ -58,7 +69,6 @@ socket.on('join_room', function(msg) {
         localStorage.setItem('room', msg.room);
         localStorage.setItem('player_id', msg.player_id);
         app.isGameCreated = true;
-//        app.count();
         });
 
 socket.on('game_res', function(msg) {
