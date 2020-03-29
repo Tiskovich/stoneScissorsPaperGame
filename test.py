@@ -2,24 +2,24 @@ import os
 import time
 from collections import deque
 
-from flask import Flask, render_template, request
+from flask import request
 from flask_socketio import SocketIO, join_room, emit
 
-from game import Game, choices
+from app import flask_app
+from app.game import Game, choices
 
-# initialize Flask
-app = Flask(__name__)
-socketio = SocketIO(app)
+# app.config.update(dict(
+#     DATABASE=os.path.join(app.root_path, DATABASE),
+#     SECRET_KEY='development key',
+#     USERNAME='admin',
+#     PASSWORD='default'
+# ))
+
+socketio = SocketIO(flask_app)
 
 ROOMS = {}
 EMPTY_ROOMS = deque()
 PLAYERS = []
-
-
-@app.route('/')
-def index():
-    """Serve the index HTML"""
-    return render_template('index.html')
 
 
 @socketio.on('create')
@@ -75,4 +75,4 @@ def terminate_session(data):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=os.getenv('DEBUG'))
+    socketio.run(flask_app, debug=os.getenv('DEBUG'))
