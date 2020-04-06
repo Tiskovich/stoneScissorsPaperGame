@@ -6,14 +6,7 @@ from flask import request
 from flask_socketio import SocketIO, join_room, emit
 
 from app import flask_app
-from app.game import Game, choices
-
-# app.config.update(dict(
-#     DATABASE=os.path.join(app.root_path, DATABASE),
-#     SECRET_KEY='development key',
-#     USERNAME='admin',
-#     PASSWORD='default'
-# ))
+from app.game import GameRoom, choices
 
 socketio = SocketIO(flask_app)
 
@@ -25,42 +18,54 @@ PLAYERS = []
 @socketio.on('create')
 def on_create(data):
     """Create a game lobby"""
-    player = request.sid
+    player_sid = request.sid
+    player_name = data.get('player_name')
+    print data
+    print 'CREATE GAME', player_name
     if len(EMPTY_ROOMS):
         room_id = EMPTY_ROOMS.popleft()
         gm = ROOMS.get(room_id)
-        gm.add_player(request.sid)
     else:
-        gm = Game(
+        gm = GameRoom(
             team_size=data['size'],
-            player=player
+            player=player_sid,
+            # player_name=player_name,
         )
         room_id = gm.game_id
         EMPTY_ROOMS.append(room_id)
         ROOMS[room_id] = gm
+    print 'The room with id {} has been created'.format(room_id)
+    print ROOMS
+    gm.add_player(player_name, request.sid)
     join_room(room_id)
     print 'The game has created. Waiting opponents.'
-    while not gm.is_full():
+    while not gm.is_full_game():
         time.sleep(1)
-    emit('join_room', {'room': room_id, 'player_id': player}, room=room_id)
+    emit('join_room', {'room': room_id, 'player_sid': player_sid}, room=room_id)
 
 
 @socketio.on('game_move')
 def battle(data):
     """Make battle"""
-    room = data['room']
+    results = {}
+    room_id = int(data['room'])
+    player_name = data.get('player_name', 'Unknown')
     choice = data['symbol']
-    gm = ROOMS.get(room)
-    player = request.sid
-    gm.set_choice(player, choice)
-    while not gm.is_choices():
+    player_sid = request.sid
+    gm = ROOMS.get(room_id)
+    gm.set_choice(player_name, choice)
+    while not gm.is_all_choices():
         time.sleep(1)
-    results = gm.get_result()
-    results['your_results'] = results.get(player)
-    results['your_choice'] = gm.playerChoices.get(player)
-    opponent_choices = [v for _, v in gm.playerChoices.iteritems() if _ != player]
-    results['opponent_choices'] = opponent_choices
-    emit('game_res', results, room=player)
+    while not gm.is_calculated:
+        time.sleep(1)
+        gm.calc_results()
+        gm.is_calculated = True
+    results['your_results'] = gm.get_player_result(player_name)
+    results['your_choice'] = choice
+    results['opponent_choices'] = gm.get_opponents_choices()
+    print 'player_sid', player_sid
+    print results
+    emit('game_res', results, room=player_sid)
 
 
 @socketio.on('terminate_session')

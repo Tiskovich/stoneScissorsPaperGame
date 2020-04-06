@@ -36,6 +36,10 @@ var app = new Vue({
         isGameCreated: false,
         isResults: false,
         results: '',
+        player_name: '',
+        room: '',
+        size: 2,
+        player_sid: '',
     },
     methods: {
         createGame() {
@@ -43,18 +47,17 @@ var app = new Vue({
                     socket.on('connect', function() {
                     console.log('Websocket connected!');
                     });
-                    socket.emit('create', {size: 2});
+                    console.log(this.player_name)
+                    socket.emit('create', {size: 2, player_name: this.player_name});
         },
         sendSymbol(symbol) {
                     console.log(symbol);
-                    console.log('Send' + '"' + symbol + '"' +'to opponents...');
-                    var room = localStorage.getItem('room');
-                    socket.emit('game_move', {size: 2, symbol: symbol, room: room});
+                    console.log('Send ' + '"' + symbol + '"' + ' to opponents...');
+                    socket.emit('game_move', {size: this.size, symbol: symbol, room: this.room, player_name: this.player_name});
                     this.isGameCreated = !this.isGameCreated;
         },
         exitGame() {
-            var room = localStorage.getItem('room');
-            socket.emit('terminate_session', {player_id: localStorage.getItem('player_id'), room:  localStorage.getItem('room')});
+            socket.emit('terminate_session', {player_sid: this.player_sid, room: this.room});
             console.log('Exit from current game');
             location.reload(true);
         }
@@ -66,18 +69,14 @@ var app = new Vue({
 var socket = io.connect('http://' + document.domain + ':' + location.port);
 socket.on('join_room', function(msg) {
         console.log(msg);
-        localStorage.setItem('room', msg.room);
-        localStorage.setItem('player_id', msg.player_id);
+        app.room =  msg.room
+        app.player_sid = msg.player_sid
         app.isGameCreated = true;
         });
 
 socket.on('game_res', function(msg) {
         console.log(msg);
-        if (msg.your_choice == 'dead_heat' || msg.opponent_choices.includes('dead_heat')) {
-            app.isGameCreated = true;
-        } else {
             app.isGameCreated = false;
             app.isResults = true;
             app.results = msg;
-                }
     });

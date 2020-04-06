@@ -25,23 +25,13 @@ class Round(db.Model):
 
 class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
     player_id = db.Column(db.Integer, db.ForeignKey('player.id'))
+    choice = db.Column(db.Integer)
     result = db.Column(db.Integer)
-
-
-# class GameRoundLink(db.Model):
-#     game_id = db.Column(db.Integer, db.ForeignKey('game.id'), primary_key=True)
-#     round_id = db.Column(db.Integer, db.ForeignKey('round.id'), primary_key=True)
+    round_id = db.Column(db.Integer, db.ForeignKey('round.id'))
 
 
 game_player_link = db.Table('game_player_link',
                             db.Column('game_id', db.Integer, db.ForeignKey('game.id'), primary_key=True),
                             db.Column('player_id', db.Integer, db.ForeignKey('player.id'), primary_key=True)
                            )
-
-
-
-# class GamePlayerLink(db.Model):
-#     game_id = db.Column(db.Integer, db.ForeignKey('game.id'), primary_key=True)
-#     player_id = db.Column(db.Integer, db.ForeignKey('player.id'), primary_key=True)
