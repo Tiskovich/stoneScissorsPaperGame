@@ -165,3 +165,31 @@ class GameRoom(object):
                     self.__set_player_result(player.id, results.WIN)
                 for player in grouped_users[group2]:
                     self.__set_player_result(player.id, results.LOSE)
+
+    @staticmethod
+    def get_player_games(player_id):
+        player = Player.query.get(player_id)
+        return player.games
+
+    def _get_player_all_stats(self, player_id):
+        game_res = []
+        for game in self.get_player_games(player_id):
+            round_res = {}
+            for round in game.rounds:
+                result = Result.query.filter_by(player_id=player_id, round_id=round.id).first()
+                if result:
+                    round_res[round.round] = result.result
+                else:
+                    break
+            game_res.append(round_res)
+        return game_res
+
+    def get_player_stats(self, player_name):
+        res = {}
+        player = Player.query.filter_by(name=player_name).first()
+        stats = self._get_player_all_stats(player.id)
+        for game in stats:
+            if game:
+                max_round, result = max(game.iteritems(), key=lambda x: x[1])
+                res[result] = res.get(result, 0) + 1
+        return res

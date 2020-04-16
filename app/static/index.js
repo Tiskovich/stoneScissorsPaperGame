@@ -61,6 +61,16 @@ var app = new Vue({
             console.log('Exit from current game');
             location.reload(true);
         }
+    },
+    computed: {
+        games_counter: function () {
+            var total = 0;
+            for (key in this.results['stats']) {
+                total += this.results['stats'][key];
+            };
+            console.log(total);
+            return total
+        }
     }
 });
 
@@ -69,9 +79,10 @@ var app = new Vue({
 var socket = io.connect('http://' + document.domain + ':' + location.port);
 socket.on('join_room', function(msg) {
         console.log(msg);
-        app.room =  msg.room
-        app.player_sid = msg.player_sid
+        app.room =  msg.room;
+        app.player_sid = msg.player_sid;
         app.isGameCreated = true;
+        app.results = msg.results;
         });
 
 socket.on('game_res', function(msg) {

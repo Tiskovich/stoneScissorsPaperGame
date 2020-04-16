@@ -18,6 +18,7 @@ PLAYERS = []
 @socketio.on('create')
 def on_create(data):
     """Create a game lobby"""
+    results = {}
     player_sid = request.sid
     player_name = data.get('player_name')
     print data
@@ -41,7 +42,8 @@ def on_create(data):
     print 'The game has created. Waiting opponents.'
     while not gm.is_full_game():
         time.sleep(1)
-    emit('join_room', {'room': room_id, 'player_sid': player_sid}, room=room_id)
+    results['stats'] = gm.get_player_stats(player_name)
+    emit('join_room', {'room': room_id, 'player_sid': player_sid, 'results': results}, room=room_id)
 
 
 @socketio.on('game_move')
@@ -63,7 +65,7 @@ def battle(data):
     results['your_results'] = gm.get_player_result(player_name)
     results['your_choice'] = choice
     results['opponent_choices'] = gm.get_opponents_choices()
-    print 'player_sid', player_sid
+    results['stats'] = gm.get_player_stats(player_name)
     print results
     emit('game_res', results, room=player_sid)
 
