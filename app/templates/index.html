@@ -13,9 +13,19 @@
     <div v-if="!isStartGame && !isGameCreated && !isResults">
         Waiting oponents ...
     </div>
+    <div v-if="newRound">
+        The game will continue in ...
+        <timer :start="waitNewGameStart"
+               :end="end"
+               :fn="continueGame.bind(this)"
+        ></timer>
+    </div>
     <div v-if="isGameCreated">
         <h1>The game is started</h1>
-        <timer></timer>
+        <timer :start="start"
+               :end="end"
+               :fn="createGame.bind(this, 'inactive')"
+        ></timer>
         <button @click="sendSymbol('rock')">Камень</button>
         <button @click="sendSymbol('scissors')">Ножницы</button>
         <button @click="sendSymbol('paper')">Бумага</button>
@@ -24,7 +34,7 @@
     <div v-if="isGameCreated || isResults">
         <h1>Player stats</h1>
         <h2>Всего игр:</h2>
-        <div >[[results.games_counter]]</div>
+        <div >[[gamesCounter]]</div>
     </div>
     <div v-if="isResults">
         Results:
@@ -33,6 +43,7 @@
         <p>[[results.your_choice]]</p>
         Opponent choices:
         <p v-for="choice  in results.opponent_choices">[[choice]] </p>
+        <button @click="createGame">PLAY AGAIN</button>
     </div>
 </div>
 <script src="static/index.js"></script>

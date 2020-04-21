@@ -151,7 +151,7 @@ class GameRoom(object):
             if not players or group == (choices.LEAVE_GAME or choices.INACTIVE):
                 del grouped_users[group]
         if len(grouped_users) == 1:
-            for player in grouped_users.itervalues():
+            for player in grouped_users[grouped_users.keys()[0]]:
                 self.__set_player_result(player.id, results.TIE)
         for group1, group2 in itertools.combinations(grouped_users, 2):
             print group1, group2

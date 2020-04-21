@@ -23,19 +23,23 @@ def on_create(data):
     player_name = data.get('player_name')
     print data
     print 'CREATE GAME', player_name
-    if len(EMPTY_ROOMS):
+    if int(data.get('round')) > 1:
+        room_id = data.get('room')
+        gm = ROOMS.get(room_id)
+        gm.round = int(data.get('round'))
+    elif len(EMPTY_ROOMS):
         room_id = EMPTY_ROOMS.popleft()
         gm = ROOMS.get(room_id)
     else:
         gm = GameRoom(
             team_size=data['size'],
             player=player_sid,
-            # player_name=player_name,
         )
         room_id = gm.game_id
         EMPTY_ROOMS.append(room_id)
         ROOMS[room_id] = gm
     print 'The room with id {} has been created'.format(room_id)
+    print 'ROUND', gm.round
     print ROOMS
     gm.add_player(player_name, request.sid)
     join_room(room_id)
@@ -66,6 +70,7 @@ def battle(data):
     results['your_choice'] = choice
     results['opponent_choices'] = gm.get_opponents_choices()
     results['stats'] = gm.get_player_stats(player_name)
+
     print results
     emit('game_res', results, room=player_sid)
 
