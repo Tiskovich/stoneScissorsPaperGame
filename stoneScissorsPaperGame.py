@@ -31,10 +31,7 @@ def on_create(data):
         room_id = EMPTY_ROOMS.popleft()
         gm = ROOMS.get(room_id)
     else:
-        gm = GameRoom(
-            team_size=data['size'],
-            player=player_sid,
-        )
+        gm = GameRoom(data['size'])
         room_id = gm.game_id
         EMPTY_ROOMS.append(room_id)
         ROOMS[room_id] = gm

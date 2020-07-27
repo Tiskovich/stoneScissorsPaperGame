@@ -24,7 +24,7 @@
         <h1>The game is started</h1>
         <timer :start="start"
                :end="end"
-               :fn="createGame.bind(this, 'inactive')"
+               :fn="sendSymbol.bind(this, 'inactive')"
         ></timer>
         <button @click="sendSymbol('rock')">Камень</button>
         <button @click="sendSymbol('scissors')">Ножницы</button>

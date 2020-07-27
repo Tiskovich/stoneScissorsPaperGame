@@ -28,7 +28,7 @@ results = Results()
 
 
 class GameRoom(object):
-    def __init__(self, team_size=2, player=None):
+    def __init__(self, team_size=2):
         self.team_size = team_size
         self.game_id = self.set_game_id()
         self.round = 1
